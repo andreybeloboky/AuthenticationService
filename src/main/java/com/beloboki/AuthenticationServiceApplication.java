@@ -1,4 +1,4 @@
-package com.beloboki.authentication_service;
+package com.beloboki;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,5 +9,4 @@ public class AuthenticationServiceApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(AuthenticationServiceApplication.class, args);
 	}
-
 }
