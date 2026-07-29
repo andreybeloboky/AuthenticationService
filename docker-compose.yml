@@ -1,0 +1,34 @@
+services:
+  auth_db:
+    image: postgres:17
+    container_name: auth_postgres-db
+    environment:
+      POSTGRES_DB: auth_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+    ports:
+      - "5433:5432"
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user -d auth_db" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: auth-users
+    ports:
+      - "8082:8080"
+    depends_on:
+      auth_db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: jdbc:postgresql://auth_db:5432/auth_db
+      DATABASE_USERNAME: user
+      DATABASE_PASSWORD: pass
+volumes:
+  auth_db_data:
