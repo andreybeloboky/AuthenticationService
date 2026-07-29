@@ -23,28 +23,29 @@ public class AuthService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public void register(RegisterRequest registerRequest) {
+    public Long register(RegisterRequest registerRequest) {
         AuthUser authUser = authMapper.toEntity(registerRequest);
         User user = userMapper.toUser(registerRequest.userRequest());
 
         UserResponse userResponse = userClient.save(user);
 
-        authUser.setRole(registerRequest.role());
-        authUser.setUsername(registerRequest.username());
         authUser.setPasswordHash(passwordEncoder.encode(registerRequest.password()));
         authUser.setUserId(userResponse.id());
 
         authDAO.saveAndFlush(authUser);
+
+        return findUserIdByUsernameAndPassword(authUser.getUsername(), authUser.getPasswordHash());
     }
 
-    public Long findUserIdByUsernameAndPassword(RegisterRequest registerRequest) {
-        AuthUser authUser = authMapper.toEntity(registerRequest);
+    public Long logIn(LoginRequest loginRequest) {
+        AuthUser authUser = authMapper.toLogin(loginRequest);
+        authUser.setPasswordHash(passwordEncoder.encode(loginRequest.password()));
 
-        return authDAO.findUserByUsernameAndPassword(authUser.getUsername(),
-                passwordEncoder.encode(authUser.getPasswordHash()));
+        return findUserIdByUsernameAndPassword(authUser.getUsername(), authUser.getPasswordHash());
     }
 
-    public void logIn(LoginRequest loginRequest) {
-
+    private Long findUserIdByUsernameAndPassword(String username, String hashPassword) {
+        return authDAO.findUserByUsernameAndPassword(username,
+                passwordEncoder.encode(hashPassword));
     }
 }

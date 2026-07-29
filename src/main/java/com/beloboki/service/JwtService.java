@@ -1,6 +1,7 @@
 package com.beloboki.service;
 
 import com.beloboki.model.Role;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -14,7 +15,6 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    @Value("${jwt.secret}")
     private final SecretKey secretKey;
 
     public JwtService(@Value("${jwt.secret}") String secret) {
@@ -43,17 +43,15 @@ public class JwtService {
                 .compact();
     }
 
-    public boolean isTokenValid(String token) {
+    public Claims parse(String token) {
         try {
-            Jwts.parserBuilder()
+            return Jwts.parserBuilder()
                     .setSigningKey(secretKey)
                     .build()
-                    .parseClaimsJws(token);
-            return true;
+                    .parseClaimsJws(token)
+                    .getBody();
         } catch (JwtException e) {
-            return false;
+            throw new JwtException("Wrong!!");
         }
     }
-
-
 }

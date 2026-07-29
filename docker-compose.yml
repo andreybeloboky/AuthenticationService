@@ -30,5 +30,6 @@ services:
       DATABASE_URL: jdbc:postgresql://auth_db:5432/auth_db
       DATABASE_USERNAME: user
       DATABASE_PASSWORD: pass
+      APP_JWT_SECRET: x9V4bN7mQ2pL5wR8zK3jH6cF1gT9vD4sY8nB2mX5cZ7vM3kP9lJ4hG1rT6dW8yN2
 volumes:
   auth_db_data:
