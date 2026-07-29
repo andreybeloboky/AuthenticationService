@@ -4,8 +4,9 @@ import com.beloboki.dto.RegisterRequest;
 import com.beloboki.model.AuthUser;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface AuthMapper {
 
     @Mapping(target = "id", ignore = true)

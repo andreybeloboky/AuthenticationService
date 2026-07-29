@@ -25,7 +25,7 @@ public class AuthService {
 
     public void register(RegisterRequest registerRequest) {
         AuthUser authUser = authMapper.toEntity(registerRequest);
-        User user = userMapper.toUser(registerRequest);
+        User user = userMapper.toUser(registerRequest.userRequest());
 
         UserResponse userResponse = userClient.save(user);
 
