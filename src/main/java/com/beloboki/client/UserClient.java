@@ -1,7 +1,8 @@
 package com.beloboki.client;
 
-import com.beloboki.dto.AuthRequest;
+import com.beloboki.dto.UserRequest;
 import com.beloboki.dto.UserResponse;
+import com.beloboki.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,10 +15,10 @@ public class UserClient {
 
     private final WebClient userWebClient;
 
-    public UserResponse save(AuthRequest request) {
+    public UserResponse save(User user) {
         return userWebClient.post()
                 .uri("/api/users")
-                .bodyValue(request)
+                .bodyValue(user)
                 .retrieve()
                 .bodyToMono(UserResponse.class)
                 .block();

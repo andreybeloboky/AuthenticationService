@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 @Data
 public class AuthUser {
-
         @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(name = "id")
         private Long id;

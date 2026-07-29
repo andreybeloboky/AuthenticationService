@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import java.time.LocalDate;
 
-public record AuthRequest(
+public record UserRequest(
         @NotBlank(message = "Name shouldn't be empty") String name,
         @NotBlank(message = "Surname shouldn't be empty") String surname,
         @NotNull(message = "Birth date shouldn't be empty") @Past LocalDate birthDate,
