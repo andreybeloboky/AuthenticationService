@@ -6,10 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public record RegisterRequest
-        (@Valid UserRequest userRequest,
-         @NotBlank @Size(min = 3) String username,
-         @NotBlank @Size(min = 8) String password,
-         @NotNull Role role
-        ) {
-}
+public record RegisterRequest(
+        @Valid UserRequest userRequest,
+        @NotBlank @Size(min = 3) String username,
+        @NotBlank @Size(min = 8) String password,
+        @NotNull Role role) {}

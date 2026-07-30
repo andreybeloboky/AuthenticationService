@@ -1,4 +1,5 @@
 package com.beloboki.dto;
 
-public record TokenValidationResponse(boolean valid, String subject) {
-}
+import jakarta.validation.constraints.NotBlank;
+
+public record TokenValidationResponse(boolean valid, @NotBlank String subject) {}

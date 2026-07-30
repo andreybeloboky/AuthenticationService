@@ -2,13 +2,15 @@ package com.beloboki.service;
 
 import com.beloboki.client.UserClient;
 import com.beloboki.dao.AuthDAO;
-import com.beloboki.dto.LoginRequest;
-import com.beloboki.dto.RegisterRequest;
-import com.beloboki.dto.UserResponse;
+import com.beloboki.dto.*;
+import com.beloboki.exception.UsernameAlreadyExists;
+import com.beloboki.exception.UsernameNotFoundException;
 import com.beloboki.mapper.AuthMapper;
 import com.beloboki.mapper.UserMapper;
 import com.beloboki.model.AuthUser;
+import com.beloboki.model.Role;
 import com.beloboki.model.User;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,14 +20,20 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final UserClient userClient;
+    private final JwtService jwtService;
     private final AuthDAO authDAO;
     private final AuthMapper authMapper;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public Long register(RegisterRequest registerRequest) {
+    public TokenResponse register(RegisterRequest registerRequest) {
         AuthUser authUser = authMapper.toEntity(registerRequest);
         User user = userMapper.toUser(registerRequest.userRequest());
+
+        if (authDAO.existingNaming(authUser.getUsername()) != null) {
+            throw new UsernameAlreadyExists(
+                    "Such username = %s was already created".formatted(authUser.getUsername()));
+        }
 
         UserResponse userResponse = userClient.save(user);
 
@@ -34,18 +42,55 @@ public class AuthService {
 
         authDAO.saveAndFlush(authUser);
 
-        return findUserIdByUsernameAndPassword(authUser.getUsername(), authUser.getPasswordHash());
+        Long userId =
+                findUserIdByUsernameAndPassword(authUser.getUsername(), authUser.getPasswordHash());
+        String accessToken =
+                jwtService.generateToken(authUser.getUsername(), userId, authUser.getRole());
+        String refreshToken =
+                jwtService.generateRefreshToken(authUser.getUsername(), userId, authUser.getRole());
+
+        return new TokenResponse(accessToken, refreshToken);
     }
 
-    public Long logIn(LoginRequest loginRequest) {
+    public TokenResponse logIn(LoginRequest loginRequest) {
         AuthUser authUser = authMapper.toLogin(loginRequest);
         authUser.setPasswordHash(passwordEncoder.encode(loginRequest.password()));
 
-        return findUserIdByUsernameAndPassword(authUser.getUsername(), authUser.getPasswordHash());
+        if (authDAO.existingNaming(authUser.getUsername()) == null) {
+            throw new UsernameNotFoundException(
+                    "Such username = %s isn't created yet".formatted(authUser.getUsername()));
+        }
+
+        Long userId =
+                findUserIdByUsernameAndPassword(authUser.getUsername(), authUser.getPasswordHash());
+        String accessToken =
+                jwtService.generateToken(authUser.getUsername(), userId, authUser.getRole());
+        String refreshToken =
+                jwtService.generateRefreshToken(authUser.getUsername(), userId, authUser.getRole());
+
+        return new TokenResponse(accessToken, refreshToken);
+    }
+
+    public TokenValidationResponse validate(String header) {
+        String token = header.substring(7);
+        Claims claim = jwtService.parse(token);
+        String username = claim.getSubject();
+        return new TokenValidationResponse(true, username);
+    }
+
+    public TokenResponse refreshToken(TokenRefreshRequest tokenRequest) {
+        Claims claims = jwtService.parse(tokenRequest.refreshToken());
+        String username = claims.getSubject();
+        Role role = Role.valueOf(claims.get("role", String.class));
+        Long userId = claims.get("userId", Long.class);
+
+        String accessToken = jwtService.generateToken(username, userId, role);
+        String refreshToken = jwtService.generateRefreshToken(username, userId, role);
+        return new TokenResponse(accessToken, refreshToken);
     }
 
     private Long findUserIdByUsernameAndPassword(String username, String hashPassword) {
-        return authDAO.findUserByUsernameAndPassword(username,
-                passwordEncoder.encode(hashPassword));
+        return authDAO.findUserIdByUsernameAndPassword(
+                username, passwordEncoder.encode(hashPassword));
     }
 }

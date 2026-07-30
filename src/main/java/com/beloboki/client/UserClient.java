@@ -1,6 +1,5 @@
 package com.beloboki.client;
 
-import com.beloboki.dto.UserRequest;
 import com.beloboki.dto.UserResponse;
 import com.beloboki.model.User;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,8 @@ public class UserClient {
     private final WebClient userWebClient;
 
     public UserResponse save(User user) {
-        return userWebClient.post()
+        return userWebClient
+                .post()
                 .uri("/api/users")
                 .bodyValue(user)
                 .retrieve()

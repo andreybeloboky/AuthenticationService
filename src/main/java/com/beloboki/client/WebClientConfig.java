@@ -16,8 +16,7 @@ public class WebClientConfig {
 
     @Bean
     public WebClient userWebClient(WebClient.Builder builder) {
-        return builder
-                .baseUrl("http://localhost:8080")
+        return builder.baseUrl("http://localhost:8080")
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
     }
