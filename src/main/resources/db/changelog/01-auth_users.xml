@@ -17,10 +17,10 @@
       <column name="role" type="VARCHAR(255) CHECK (role IN ('ADMIN', 'USER'))">
         <constraints nullable="false"/>
       </column>
-      <column name="created_at" type="VARCHAR(255)">
+      <column name="created_at" type="TIMESTAMP">
         <constraints nullable="false"/>
       </column>
-      <column name="updated_at" type="VARCHAR(255)">
+      <column name="updated_at" type="TIMESTAMP">
         <constraints nullable="false"/>
       </column>
     </createTable>

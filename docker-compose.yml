@@ -1,7 +1,7 @@
 services:
   auth_db:
     image: postgres:17
-    container_name: auth_postgres-db
+    container_name: auth_db
     environment:
       POSTGRES_DB: auth_db
       POSTGRES_USER: user
@@ -26,10 +26,14 @@ services:
     depends_on:
       auth_db:
         condition: service_healthy
+    env_file:
+      - .env
     environment:
-      DATABASE_URL: jdbc:postgresql://auth_db:5432/auth_db
-      DATABASE_USERNAME: user
-      DATABASE_PASSWORD: pass
-      APP_JWT_SECRET: x9V4bN7mQ2pL5wR8zK3jH6cF1gT9vD4sY8nB2mX5cZ7vM3kP9lJ4hG1rT6dW8yN2
+      - USER_SERVICE_URL=http://user-service:8080
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://auth_db:5432/auth_db
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=pass
+      - JWT_SECRET=mysupersecretkeymysupersecretkey123456
 volumes:
   auth_db_data:
