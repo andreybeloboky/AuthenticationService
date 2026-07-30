@@ -5,25 +5,25 @@
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>4.1.0</version>
-    <relativePath/>
+    <relativePath></relativePath>
   </parent>
   <groupId>com.beloboki</groupId>
   <artifactId>authentication-service</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name/>
-  <description/>
-  <url/>
+  <name></name>
+  <description></description>
+  <url></url>
   <licenses>
-    <license/>
+    <license></license>
   </licenses>
   <developers>
-    <developer/>
+    <developer></developer>
   </developers>
   <scm>
-    <connection/>
-    <developerConnection/>
-    <tag/>
-    <url/>
+    <connection></connection>
+    <developerConnection></developerConnection>
+    <tag></tag>
+    <url></url>
   </scm>
   <properties>
     <java.version>21</java.version>
@@ -32,12 +32,10 @@
     <mapstruct.version>1.6.3</mapstruct.version>
     <spotless-version>3.8.0</spotless-version>
     <xml-format-maven-plugin>4.3.0</xml-format-maven-plugin>
-
     <jacoco-maven-plugin>0.8.15</jacoco-maven-plugin>
     <jacoco.argLine></jacoco.argLine>
     <surefire-plugin>3.1.2</surefire-plugin>
     <failsafe-plugin>3.2.1</failsafe-plugin>
-
     <sonar.projectKey>andreybeloboky_UserService</sonar.projectKey>
     <sonar.organization>andreibeloboki</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
