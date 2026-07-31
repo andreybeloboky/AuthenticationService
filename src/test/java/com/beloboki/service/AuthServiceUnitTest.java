@@ -83,9 +83,6 @@ public class AuthServiceUnitTest {
         when(userClient.save(user)).thenReturn(userResponse);
         when(passwordEncoder.encode(registerRequest.password())).thenReturn("encodedPass");
 
-        when(authDAO.findUserIdByUsernameAndPassword(
-                        authUser.getUsername(), authUser.getPasswordHash()))
-                .thenReturn(USER_ID);
         when(jwtService.generateToken(USERNAME, USER_ID, USER)).thenReturn("access-token");
         when(jwtService.generateRefreshToken(USERNAME, USER_ID, USER)).thenReturn("refresh-token");
 
