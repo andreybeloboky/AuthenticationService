@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -153,18 +154,20 @@ public class AuthControllerIT extends AbstractIT {
         Mockito.when(authDAO.existingNaming(USERNAME)).thenReturn(USERNAME);
         TokenResponse tokenResponseKey = authService.logIn(loginRequest);
 
+        TokenRefreshRequest tokenRefreshRequest = new TokenRefreshRequest(tokenResponseKey.refreshToken());
+
         TokenResponse tokenResponse =
                 webTestClient
                         .post()
                         .uri("/api/auth/refresh")
-                        .bodyValue(tokenResponseKey.refreshToken())
+                        .bodyValue(tokenRefreshRequest)
                         .exchange()
                         .expectBody(TokenResponse.class)
                         .returnResult()
                         .getResponseBody();
 
         Assertions.assertNotNull(tokenResponse);
-        Assertions.assertNotNull(tokenResponse.refreshToken());
         Assertions.assertNotNull(tokenResponse.accessToken());
+        Assertions.assertNotNull(tokenResponse.refreshToken());
     }
 }

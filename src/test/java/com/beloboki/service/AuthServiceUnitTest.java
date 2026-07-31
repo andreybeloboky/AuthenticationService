@@ -1,4 +1,4 @@
-package com.beloboki;
+package com.beloboki.service;
 
 import static org.mockito.Mockito.*;
 
@@ -12,8 +12,6 @@ import com.beloboki.mapper.UserMapper;
 import com.beloboki.model.AuthUser;
 import com.beloboki.model.Role;
 import com.beloboki.model.User;
-import com.beloboki.service.AuthService;
-import com.beloboki.service.JwtService;
 import io.jsonwebtoken.Claims;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

@@ -34,12 +34,22 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({UsernameAlreadyExists.class})
-    public ResponseEntity<ProblemDetail> handleUsernameAlreadyExists(Exception e) {
+    public ResponseEntity<ProblemDetail> handleUsernameAlreadyExists(UsernameAlreadyExists e) {
         log.error("Handle username is created exception", e);
         ProblemDetail responseError = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         responseError.setTitle("Username is already created");
         responseError.setDetail(e.getMessage());
         responseError.setProperty("errorTime", LocalDateTime.now().toString());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseError);
+    }
+
+    @ExceptionHandler({InvalidTokenException.class})
+    public ResponseEntity<ProblemDetail> handleJwtException(InvalidTokenException e) {
+        log.error("Invalid or expired JWT token:", e);
+        ProblemDetail responseError = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
+        responseError.setTitle("Invalid or expired JWT token");
+        responseError.setDetail(e.getMessage());
+        responseError.setProperty("errorTime", LocalDateTime.now().toString());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseError);
     }
 }

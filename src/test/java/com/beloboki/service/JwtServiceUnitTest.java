@@ -1,7 +1,6 @@
-package com.beloboki;
+package com.beloboki.service;
 
 import com.beloboki.model.Role;
-import com.beloboki.service.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import org.junit.jupiter.api.Assertions;

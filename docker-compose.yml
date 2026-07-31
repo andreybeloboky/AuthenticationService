@@ -28,6 +28,8 @@ services:
         condition: service_healthy
     env_file:
       - .env
+    networks:
+      - bridge
     environment:
       - USER_SERVICE_URL=${USER_SERVICE_URL}
       - SPRING_PROFILES_ACTIVE=docker
@@ -37,3 +39,6 @@ services:
       - JWT_SECRET=${JWT_SECRET}
 volumes:
   auth_db_data:
+networks:
+  bridge:
+    external: true
