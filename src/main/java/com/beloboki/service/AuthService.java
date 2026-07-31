@@ -42,13 +42,12 @@ public class AuthService {
 
         authDAO.saveAndFlush(authUser);
 
-        Long userId =
-                findUserIdByUsernameAndPassword(authUser.getUsername(), authUser.getPasswordHash());
         String accessToken =
-                jwtService.generateToken(authUser.getUsername(), userId, authUser.getRole());
+                jwtService.generateToken(
+                        authUser.getUsername(), userResponse.id(), authUser.getRole());
         String refreshToken =
-                jwtService.generateRefreshToken(authUser.getUsername(), userId, authUser.getRole());
-
+                jwtService.generateRefreshToken(
+                        authUser.getUsername(), userResponse.id(), authUser.getRole());
         return new TokenResponse(accessToken, refreshToken);
     }
 

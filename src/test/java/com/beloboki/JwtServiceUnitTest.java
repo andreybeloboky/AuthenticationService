@@ -1,4 +1,4 @@
-package com.beloboki.unit;
+package com.beloboki;
 
 import com.beloboki.model.Role;
 import com.beloboki.service.JwtService;
