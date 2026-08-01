@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -21,6 +22,17 @@ public class GlobalExceptionHandler {
         responseError.setDetail(e.getMessage());
         responseError.setProperty("errorTime", LocalDateTime.now().toString());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseError);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ProblemDetail> handleValidationException(MethodArgumentNotValidException e) {
+        log.error("Validation failed", e);
+        ProblemDetail responseError = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        responseError.setTitle("Validation failed");
+        responseError.setDetail(e.getMessage());
+        responseError.setProperty("errorTime", LocalDateTime.now().toString());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseError);
     }
 
     @ExceptionHandler({EntityNotFoundException.class, UsernameNotFoundException.class})

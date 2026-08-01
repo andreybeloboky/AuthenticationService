@@ -52,20 +52,20 @@ public class AuthService {
     }
 
     public TokenResponse logIn(LoginRequest loginRequest) {
-        AuthUser authUser = authMapper.toLogin(loginRequest);
-        authUser.setPasswordHash(passwordEncoder.encode(loginRequest.password()));
+        AuthUser authUserEnter = authMapper.toLogin(loginRequest);
+        authUserEnter.setPasswordHash(passwordEncoder.encode(loginRequest.password()));
 
-        if (authDAO.existingNaming(authUser.getUsername()) == null) {
-            throw new UsernameNotFoundException(
-                    "Such username = %s isn't created yet".formatted(authUser.getUsername()));
+        AuthUser user =
+                findUserIdByUsernameAndPassword(authUserEnter.getUsername(), authUserEnter.getPasswordHash());
+
+        if (user == null) {
+            throw new UsernameNotFoundException("Invalid password or username");
         }
 
-        Long userId =
-                findUserIdByUsernameAndPassword(authUser.getUsername(), authUser.getPasswordHash());
         String accessToken =
-                jwtService.generateToken(authUser.getUsername(), userId, authUser.getRole());
+                jwtService.generateToken(user.getUsername(), user.getUserId(), user.getRole());
         String refreshToken =
-                jwtService.generateRefreshToken(authUser.getUsername(), userId, authUser.getRole());
+                jwtService.generateRefreshToken(user.getUsername(), user.getUserId(), user.getRole());
 
         return new TokenResponse(accessToken, refreshToken);
     }
@@ -88,8 +88,8 @@ public class AuthService {
         return new TokenResponse(accessToken, refreshToken);
     }
 
-    private Long findUserIdByUsernameAndPassword(String username, String hashPassword) {
-        return authDAO.findUserIdByUsernameAndPassword(
+    private AuthUser findUserIdByUsernameAndPassword(String username, String hashPassword) {
+        return authDAO.findUserByUsernameAndPassword(
                 username, passwordEncoder.encode(hashPassword));
     }
 }

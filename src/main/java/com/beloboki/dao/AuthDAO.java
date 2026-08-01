@@ -9,10 +9,7 @@ import org.springframework.stereotype.Repository;
 public interface AuthDAO extends JpaRepository<AuthUser, Long> {
 
     @Query(
-            value = "SELECT user_id FROM auth_users WHERE username = ? AND password_hash = ?",
+            value = "SELECT * FROM auth_users WHERE username = ? AND password_hash = ?",
             nativeQuery = true)
-    Long findUserIdByUsernameAndPassword(String username, String password);
-
-    @Query(value = "SELECT username FROM auth_users WHERE username = ?", nativeQuery = true)
-    String existingNaming(String username);
+    AuthUser findUserByUsernameAndPassword(String username, String password);
 }
