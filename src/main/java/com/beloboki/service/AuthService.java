@@ -56,7 +56,8 @@ public class AuthService {
         authUserEnter.setPasswordHash(passwordEncoder.encode(loginRequest.password()));
 
         AuthUser user =
-                findUserIdByUsernameAndPassword(authUserEnter.getUsername(), authUserEnter.getPasswordHash());
+                findUserIdByUsernameAndPassword(
+                        authUserEnter.getUsername(), authUserEnter.getPasswordHash());
 
         if (user == null) {
             throw new UsernameNotFoundException("Invalid password or username");
@@ -65,7 +66,8 @@ public class AuthService {
         String accessToken =
                 jwtService.generateToken(user.getUsername(), user.getUserId(), user.getRole());
         String refreshToken =
-                jwtService.generateRefreshToken(user.getUsername(), user.getUserId(), user.getRole());
+                jwtService.generateRefreshToken(
+                        user.getUsername(), user.getUserId(), user.getRole());
 
         return new TokenResponse(accessToken, refreshToken);
     }

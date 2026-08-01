@@ -25,7 +25,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ProblemDetail> handleValidationException(MethodArgumentNotValidException e) {
+    public ResponseEntity<ProblemDetail> handleValidationException(
+            MethodArgumentNotValidException e) {
         log.error("Validation failed", e);
         ProblemDetail responseError = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         responseError.setTitle("Validation failed");
