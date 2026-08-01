@@ -12,4 +12,7 @@ public interface AuthDAO extends JpaRepository<AuthUser, Long> {
             value = "SELECT * FROM auth_users WHERE username = ? AND password_hash = ?",
             nativeQuery = true)
     AuthUser findUserByUsernameAndPassword(String username, String password);
+
+    @Query(value = "SELECT username FROM auth_users WHERE username = ?", nativeQuery = true)
+    String existingNaming(String username);
 }
