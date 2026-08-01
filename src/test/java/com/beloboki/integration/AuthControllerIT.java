@@ -3,6 +3,7 @@ package com.beloboki.integration;
 import com.beloboki.client.UserClient;
 import com.beloboki.dao.AuthDAO;
 import com.beloboki.dto.*;
+import com.beloboki.model.AuthUser;
 import com.beloboki.model.Role;
 import com.beloboki.model.User;
 import com.beloboki.service.AuthService;
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -27,9 +29,11 @@ public class AuthControllerIT extends AbstractIT {
 
     @Autowired private AuthService authService;
 
-    @MockitoBean private UserClient userClient;
+    @Autowired private AuthDAO authDAO;
 
-    @MockitoBean private AuthDAO authDAO;
+    @Autowired private PasswordEncoder passwordEncoder;
+
+    @MockitoBean private UserClient userClient;
 
     private RegisterRequest registerRequest;
     private LoginRequest loginRequest;
@@ -39,6 +43,7 @@ public class AuthControllerIT extends AbstractIT {
     private String jwtSecret;
 
     private static final String USERNAME = "testUser";
+    private static final String USERNAME_FIRST = "FIRST_EVER";
     private static final String SURNAME = "last";
     private static final String EMAIL = "example@gmail.com";
     private static final String PASSWORD = "passssssswooooordddd";
@@ -47,7 +52,7 @@ public class AuthControllerIT extends AbstractIT {
     @BeforeEach
     void setUp() {
         authDAO.deleteAll();
-        loginRequest = new LoginRequest(USERNAME, PASSWORD);
+        loginRequest = new LoginRequest(USERNAME_FIRST, PASSWORD);
 
         UserRequest userRequest =
                 new UserRequest(USERNAME, SURNAME, LocalDate.of(2000, Month.JULY, 1), EMAIL, true);
@@ -64,6 +69,14 @@ public class AuthControllerIT extends AbstractIT {
                         true,
                         LocalDateTime.now(),
                         LocalDateTime.now());
+
+        AuthUser user = new AuthUser();
+        user.setUsername(USERNAME_FIRST);
+        user.setPasswordHash(passwordEncoder.encode(PASSWORD));
+        user.setRole(ADMIN);
+        user.setUserId(1L);
+
+        authDAO.saveAndFlush(user);
     }
 
     @Test
@@ -99,8 +112,6 @@ public class AuthControllerIT extends AbstractIT {
 
     @Test
     void logIn_shouldReturnValidToken() {
-        Mockito.when(authDAO.existingNaming(USERNAME)).thenReturn(USERNAME);
-
         TokenResponse tokenResponse =
                 webTestClient
                         .post()
@@ -123,14 +134,13 @@ public class AuthControllerIT extends AbstractIT {
                         .parseClaimsJws(access)
                         .getBody();
 
-        Assertions.assertEquals(USERNAME, claims.getSubject());
+        Assertions.assertEquals(USERNAME_FIRST, claims.getSubject());
         Assertions.assertNotNull(claims.get("userId", Long.class));
         Assertions.assertEquals(Role.ADMIN.toString(), claims.get("role", String.class));
     }
 
     @Test
     void valid_shouldReturnValidToken() {
-        Mockito.when(authDAO.existingNaming(USERNAME)).thenReturn(USERNAME);
         TokenResponse tokenResponseKey = authService.logIn(loginRequest);
 
         TokenValidationResponse tokenResponse =
@@ -144,13 +154,12 @@ public class AuthControllerIT extends AbstractIT {
                         .getResponseBody();
 
         Assertions.assertNotNull(tokenResponse);
-        Assertions.assertEquals(USERNAME, tokenResponse.subject());
+        Assertions.assertEquals(USERNAME_FIRST, tokenResponse.subject());
         Assertions.assertTrue(tokenResponse.valid());
     }
 
     @Test
     void refresh_shouldReturnAccessAndRefreshTokens() {
-        Mockito.when(authDAO.existingNaming(USERNAME)).thenReturn(USERNAME);
         TokenResponse tokenResponseKey = authService.logIn(loginRequest);
 
         TokenRefreshRequest tokenRefreshRequest =

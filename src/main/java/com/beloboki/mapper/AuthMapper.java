@@ -22,5 +22,6 @@ public interface AuthMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "userId", ignore = true)
+    @Mapping(target = "role", ignore = true)
     AuthUser toLogin(LoginRequest request);
 }

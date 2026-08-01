@@ -58,7 +58,6 @@ public class AuthService {
         AuthUser user =
                 findUserByUsername(authUserEnter.getUsername())
                         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        ;
 
         if (!passwordEncoder.matches(loginRequest.password(), user.getPasswordHash())) {
             throw new UsernameNotFoundException("Invalid password or username");

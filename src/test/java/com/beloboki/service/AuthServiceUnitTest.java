@@ -28,6 +28,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
 public class AuthServiceUnitTest {
+
     @Mock private UserClient userClient;
     @Mock private JwtService jwtService;
     @Mock private AuthDAO authDAO;
