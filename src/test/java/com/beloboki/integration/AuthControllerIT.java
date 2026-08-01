@@ -47,7 +47,7 @@ public class AuthControllerIT extends AbstractIT {
     @BeforeEach
     void setUp() {
         authDAO.deleteAll();
-        loginRequest = new LoginRequest(USERNAME, PASSWORD, ADMIN);
+        loginRequest = new LoginRequest(USERNAME, PASSWORD);
 
         UserRequest userRequest =
                 new UserRequest(USERNAME, SURNAME, LocalDate.of(2000, Month.JULY, 1), EMAIL, true);

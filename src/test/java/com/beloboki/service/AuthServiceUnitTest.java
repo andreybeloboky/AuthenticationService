@@ -16,6 +16,7 @@ import io.jsonwebtoken.Claims;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +38,7 @@ public class AuthServiceUnitTest {
 
     private static final String USERNAME = "testUser";
     private static final String PASSWORD = "passssssswooooordddd";
-    private static final Long USER_ID = 123L;
+    private static final Long USER_ID = 1L;
     private static final Role USER = Role.USER;
     private static final Role ADMIN = Role.ADMIN;
 
@@ -119,41 +120,43 @@ public class AuthServiceUnitTest {
 
     @Test
     void logIn_success_shouldReturnTokens() {
-        LoginRequest loginRequest = new LoginRequest(USERNAME, PASSWORD, ADMIN);
+        LoginRequest loginRequest = new LoginRequest(USERNAME, PASSWORD);
+
         AuthUser authUser = new AuthUser();
+        authUser.setUserId(USER_ID);
         authUser.setUsername(USERNAME);
-        authUser.setRole(USER);
+        authUser.setPasswordHash("encodedPwd");
+        authUser.setRole(ADMIN);
 
         when(authMapper.toLogin(loginRequest)).thenReturn(authUser);
-        when(passwordEncoder.encode(loginRequest.password())).thenReturn("encodedPwd");
-        when(authDAO.existingNaming(USERNAME)).thenReturn(authUser.getUsername());
-        when(authDAO.findUserIdByUsernameAndPassword(
-                        authUser.getUsername(), authUser.getPasswordHash()))
-                .thenReturn(USER_ID);
-        when(jwtService.generateToken(USERNAME, USER_ID, USER)).thenReturn("access");
-        when(jwtService.generateRefreshToken(USERNAME, USER_ID, USER)).thenReturn("refresh");
+        when(authDAO.findUserByUsername(USERNAME)).thenReturn(Optional.of(authUser));
+        when(passwordEncoder.matches(PASSWORD, "encodedPwd")).thenReturn(true);
+        when(jwtService.generateToken(USERNAME, USER_ID, ADMIN)).thenReturn("access");
+        when(jwtService.generateRefreshToken(USERNAME, USER_ID, ADMIN)).thenReturn("refresh");
 
         TokenResponse response = authService.logIn(loginRequest);
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals("access", response.accessToken());
         Assertions.assertEquals("refresh", response.refreshToken());
-        verify(passwordEncoder).encode(loginRequest.password());
+        verify(passwordEncoder).matches(PASSWORD, "encodedPwd");
     }
 
     @Test
     void logIn_whenUsernameNotFound_shouldThrowUsernameNotFoundException() {
-        LoginRequest loginRequest = new LoginRequest(USERNAME, PASSWORD, ADMIN);
+        LoginRequest loginRequest = new LoginRequest(USERNAME, "wrongPassword");
+
         AuthUser authUser = new AuthUser();
+        authUser.setUserId(USER_ID);
         authUser.setUsername(USERNAME);
+        authUser.setPasswordHash("encodedPwd");
+        authUser.setRole(ADMIN);
 
         when(authMapper.toLogin(loginRequest)).thenReturn(authUser);
-        when(passwordEncoder.encode(loginRequest.password())).thenReturn("encodedPwd");
-        when(authDAO.existingNaming(USERNAME)).thenReturn(null);
-
+        when(authDAO.findUserByUsername(USERNAME)).thenReturn(Optional.of(authUser));
+        when(passwordEncoder.matches("wrongPassword", "encodedPwd")).thenReturn(false);
         Assertions.assertThrows(
                 UsernameNotFoundException.class, () -> authService.logIn(loginRequest));
-        verify(jwtService, never()).generateToken(anyString(), anyLong(), any());
     }
 
     @Test

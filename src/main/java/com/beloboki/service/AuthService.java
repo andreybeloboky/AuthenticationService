@@ -11,6 +11,7 @@ import com.beloboki.model.AuthUser;
 import com.beloboki.model.Role;
 import com.beloboki.model.User;
 import io.jsonwebtoken.Claims;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -53,13 +54,13 @@ public class AuthService {
 
     public TokenResponse logIn(LoginRequest loginRequest) {
         AuthUser authUserEnter = authMapper.toLogin(loginRequest);
-        authUserEnter.setPasswordHash(passwordEncoder.encode(loginRequest.password()));
 
         AuthUser user =
-                findUserIdByUsernameAndPassword(
-                        authUserEnter.getUsername(), authUserEnter.getPasswordHash());
+                findUserByUsername(authUserEnter.getUsername())
+                        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        ;
 
-        if (user == null) {
+        if (!passwordEncoder.matches(loginRequest.password(), user.getPasswordHash())) {
             throw new UsernameNotFoundException("Invalid password or username");
         }
 
@@ -90,8 +91,7 @@ public class AuthService {
         return new TokenResponse(accessToken, refreshToken);
     }
 
-    private AuthUser findUserIdByUsernameAndPassword(String username, String hashPassword) {
-        return authDAO.findUserByUsernameAndPassword(
-                username, passwordEncoder.encode(hashPassword));
+    private Optional<AuthUser> findUserByUsername(String username) {
+        return authDAO.findUserByUsername(username);
     }
 }
