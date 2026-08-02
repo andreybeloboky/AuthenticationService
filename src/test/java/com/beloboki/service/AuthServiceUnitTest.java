@@ -5,8 +5,8 @@ import static org.mockito.Mockito.*;
 import com.beloboki.client.UserClient;
 import com.beloboki.dao.AuthDAO;
 import com.beloboki.dto.*;
+import com.beloboki.exception.InvalidUsernameOrPasswordException;
 import com.beloboki.exception.UsernameAlreadyExists;
-import com.beloboki.exception.UsernameNotFoundException;
 import com.beloboki.mapper.AuthMapper;
 import com.beloboki.mapper.UserMapper;
 import com.beloboki.model.AuthUser;
@@ -157,7 +157,7 @@ public class AuthServiceUnitTest {
         when(authDAO.findUserByUsername(USERNAME)).thenReturn(Optional.of(authUser));
         when(passwordEncoder.matches("wrongPassword", "encodedPwd")).thenReturn(false);
         Assertions.assertThrows(
-                UsernameNotFoundException.class, () -> authService.logIn(loginRequest));
+                InvalidUsernameOrPasswordException.class, () -> authService.logIn(loginRequest));
     }
 
     @Test
