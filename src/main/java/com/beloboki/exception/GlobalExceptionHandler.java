@@ -37,13 +37,24 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({EntityNotFoundException.class, UsernameNotFoundException.class})
-    public ResponseEntity<ProblemDetail> handleEntityNotFoundException(Exception e) {
+    public ResponseEntity<ProblemDetail> handleEntityNotFoundException(RuntimeException e) {
         log.error("Handle entity not found exception", e);
         ProblemDetail responseError = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
         responseError.setTitle("Entity not found");
         responseError.setDetail(e.getMessage());
         responseError.setProperty("errorTime", LocalDateTime.now().toString());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseError);
+    }
+
+    @ExceptionHandler(InvalidUsernameOrPasswordException.class)
+    public ResponseEntity<ProblemDetail> handleIncorrectDataException(
+            InvalidUsernameOrPasswordException e) {
+        log.error("Handle incorrect username or password exception", e);
+        ProblemDetail responseError = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
+        responseError.setTitle("Invalid username or password");
+        responseError.setDetail(e.getMessage());
+        responseError.setProperty("errorTime", LocalDateTime.now().toString());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseError);
     }
 
     @ExceptionHandler({UsernameAlreadyExists.class})

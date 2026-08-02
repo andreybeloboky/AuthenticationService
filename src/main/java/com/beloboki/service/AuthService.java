@@ -3,6 +3,8 @@ package com.beloboki.service;
 import com.beloboki.client.UserClient;
 import com.beloboki.dao.AuthDAO;
 import com.beloboki.dto.*;
+import com.beloboki.exception.InvalidTokenException;
+import com.beloboki.exception.InvalidUsernameOrPasswordException;
 import com.beloboki.exception.UsernameAlreadyExists;
 import com.beloboki.exception.UsernameNotFoundException;
 import com.beloboki.mapper.AuthMapper;
@@ -26,6 +28,7 @@ public class AuthService {
     private final AuthMapper authMapper;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private static final String BEARER_PREFIX = "Bearer ";
 
     public TokenResponse register(RegisterRequest registerRequest) {
         AuthUser authUser = authMapper.toEntity(registerRequest);
@@ -60,7 +63,7 @@ public class AuthService {
                         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         if (!passwordEncoder.matches(loginRequest.password(), user.getPasswordHash())) {
-            throw new UsernameNotFoundException("Invalid password or username");
+            throw new InvalidUsernameOrPasswordException("Invalid password or username");
         }
 
         String accessToken =
@@ -73,6 +76,9 @@ public class AuthService {
     }
 
     public TokenValidationResponse validate(String header) {
+        if (header == null || !header.startsWith(BEARER_PREFIX)) {
+            throw new InvalidTokenException("Invalid token");
+        }
         String token = header.substring(7);
         Claims claim = jwtService.parse(token);
         String username = claim.getSubject();
