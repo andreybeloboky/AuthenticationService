@@ -1,10 +1,12 @@
 package com.beloboki.model;
 
 import java.time.LocalDate;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class User {
     private String name;

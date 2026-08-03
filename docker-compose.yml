@@ -8,6 +8,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5433:5432"
+    networks:
+      - auth_backend
     volumes:
       - auth_db_data:/var/lib/postgresql/data
     healthcheck:
@@ -29,7 +31,8 @@ services:
     env_file:
       - .env
     networks:
-      - bridge
+      - shared_network
+      - auth_backend
     environment:
       - USER_SERVICE_URL=${USER_SERVICE_URL}
       - SPRING_PROFILES_ACTIVE=docker
@@ -40,5 +43,7 @@ services:
 volumes:
   auth_db_data:
 networks:
-  bridge:
+  auth_backend:
+    driver: bridge
+  shared_network:
     external: true

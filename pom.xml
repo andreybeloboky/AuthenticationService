@@ -5,25 +5,25 @@
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>4.1.0</version>
-    <relativePath/>
+    <relativePath></relativePath>
   </parent>
   <groupId>com.beloboki</groupId>
   <artifactId>authentication-service</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name/>
-  <description/>
-  <url/>
+  <name></name>
+  <description></description>
+  <url></url>
   <licenses>
-    <license/>
+    <license></license>
   </licenses>
   <developers>
-    <developer/>
+    <developer></developer>
   </developers>
   <scm>
-    <connection/>
-    <developerConnection/>
-    <tag/>
-    <url/>
+    <connection></connection>
+    <developerConnection></developerConnection>
+    <tag></tag>
+    <url></url>
   </scm>
   <properties>
     <java.version>21</java.version>
@@ -33,18 +33,26 @@
     <spotless-version>3.8.0</spotless-version>
     <xml-format-maven-plugin>4.3.0</xml-format-maven-plugin>
     <jacoco-maven-plugin>0.8.15</jacoco-maven-plugin>
-    <jacoco.argLine/>
+    <jacoco.argLine></jacoco.argLine>
     <surefire-plugin>3.1.2</surefire-plugin>
     <failsafe-plugin>3.2.1</failsafe-plugin>
-    <sonar.projectKey>andreybeloboky_UserService</sonar.projectKey>
+    <junit-jupiter>1.21.4</junit-jupiter>
+    <postgresql>1.21.4</postgresql>
+    <jjwt-api>0.11.5</jjwt-api>
+    <jjwt-impl>0.11.5</jjwt-impl>
+    <jjwt-jackson>0.11.5</jjwt-jackson>
+    <sonar-maven-plugin>5.5.0.6356</sonar-maven-plugin>
+    <!-- <sonar.projectKey>andreybeloboky_UserService</sonar.projectKey>
     <sonar.organization>andreibeloboki</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    -->
+    <sonar.host.url>http://localhost:9000</sonar.host.url>
   </properties>
   <dependencies>
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>junit-jupiter</artifactId>
-      <version>1.21.4</version>
+      <version>${junit-jupiter}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -59,7 +67,7 @@
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>postgresql</artifactId>
-      <version>1.21.4</version>
+      <version>${postgresql}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -95,18 +103,18 @@
     <dependency>
       <groupId>io.jsonwebtoken</groupId>
       <artifactId>jjwt-api</artifactId>
-      <version>0.11.5</version>
+      <version>${jjwt-api}</version>
     </dependency>
     <dependency>
       <groupId>io.jsonwebtoken</groupId>
       <artifactId>jjwt-impl</artifactId>
-      <version>0.11.5</version>
+      <version>${jjwt-impl}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>io.jsonwebtoken</groupId>
       <artifactId>jjwt-jackson</artifactId>
-      <version>0.11.5</version>
+      <version>${jjwt-jackson}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -223,7 +231,7 @@
       <plugin>
         <groupId>org.sonarsource.scanner.maven</groupId>
         <artifactId>sonar-maven-plugin</artifactId>
-        <version>5.5.0.6356</version>
+        <version>${sonar-maven-plugin}</version>
       </plugin>
       <plugin>
         <groupId>org.jacoco</groupId>

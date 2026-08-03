@@ -4,10 +4,10 @@ import com.beloboki.dto.UserResponse;
 import com.beloboki.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
-@Service
+@Component
 @RequiredArgsConstructor
 @Slf4j
 public class UserClient {
