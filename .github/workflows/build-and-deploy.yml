@@ -2,7 +2,7 @@ name: build-and-deploy
 
 on:
   push:
-    branches: [ "main" , "feature/abjack-10" ]
+    branches: [ "main" ]
 
 jobs:
   build-and-deploy:
