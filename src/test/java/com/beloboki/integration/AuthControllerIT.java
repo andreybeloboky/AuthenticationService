@@ -38,6 +38,7 @@ public class AuthControllerIT extends AbstractIT {
     private RegisterRequest registerRequest;
     private LoginRequest loginRequest;
     private UserResponse userResponse;
+    private LoginRequest loginRequestWrong;
 
     @Value("${jwt.secret}")
     private String jwtSecret;
@@ -48,11 +49,13 @@ public class AuthControllerIT extends AbstractIT {
     private static final String EMAIL = "example@gmail.com";
     private static final String PASSWORD = "passssssswooooordddd";
     private static final Role ADMIN = Role.ADMIN;
+    private static final String WRONG = "WRONG_NAME_AND_PASSWORD";
 
     @BeforeEach
     void setUp() {
         authDAO.deleteAll();
         loginRequest = new LoginRequest(USERNAME_FIRST, PASSWORD);
+        loginRequestWrong = new LoginRequest(WRONG, WRONG);
 
         UserRequest userRequest =
                 new UserRequest(USERNAME, SURNAME, LocalDate.of(2000, Month.JULY, 1), EMAIL, true);
@@ -178,5 +181,33 @@ public class AuthControllerIT extends AbstractIT {
         Assertions.assertNotNull(tokenResponse);
         Assertions.assertNotNull(tokenResponse.accessToken());
         Assertions.assertNotNull(tokenResponse.refreshToken());
+    }
+
+    @Test
+    void valid_shouldReturnException() {
+        webTestClient
+                .post()
+                .uri("/api/auth/validate")
+                .header("Authorization", "Bearer wrong")
+                .exchange()
+                .expectStatus()
+                .isUnauthorized()
+                .expectBody()
+                .jsonPath("$.detail")
+                .isEqualTo("Token is invalid");
+    }
+
+    @Test
+    void sendInvalidPassword_shouldReturnException() {
+        webTestClient
+                .post()
+                .uri("/api/auth/login")
+                .bodyValue(loginRequestWrong)
+                .exchange()
+                .expectStatus()
+                .isNotFound()
+                .expectBody()
+                .jsonPath("$.detail")
+                .isEqualTo("User not found");
     }
 }

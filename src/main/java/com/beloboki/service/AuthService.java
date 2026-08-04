@@ -63,7 +63,7 @@ public class AuthService {
                         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         if (!passwordEncoder.matches(loginRequest.password(), user.getPasswordHash())) {
-            throw new InvalidUsernameOrPasswordException("Invalid password or username");
+            throw new InvalidUsernameOrPasswordException("Invalid password");
         }
 
         String accessToken =
