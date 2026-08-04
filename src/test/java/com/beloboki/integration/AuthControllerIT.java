@@ -39,6 +39,7 @@ public class AuthControllerIT extends AbstractIT {
     private LoginRequest loginRequest;
     private UserResponse userResponse;
     private LoginRequest loginRequestWrong;
+    private LoginRequest loginRequestWrongPassword;
 
     @Value("${jwt.secret}")
     private String jwtSecret;
@@ -56,6 +57,7 @@ public class AuthControllerIT extends AbstractIT {
         authDAO.deleteAll();
         loginRequest = new LoginRequest(USERNAME_FIRST, PASSWORD);
         loginRequestWrong = new LoginRequest(WRONG, WRONG);
+        loginRequestWrongPassword = new LoginRequest(USERNAME_FIRST, WRONG);
 
         UserRequest userRequest =
                 new UserRequest(USERNAME, SURNAME, LocalDate.of(2000, Month.JULY, 1), EMAIL, true);
@@ -198,7 +200,7 @@ public class AuthControllerIT extends AbstractIT {
     }
 
     @Test
-    void sendInvalidPassword_shouldReturnException() {
+    void sendNotExistingUser_shouldReturnException() {
         webTestClient
                 .post()
                 .uri("/api/auth/login")
@@ -209,5 +211,19 @@ public class AuthControllerIT extends AbstractIT {
                 .expectBody()
                 .jsonPath("$.detail")
                 .isEqualTo("User not found");
+    }
+
+    @Test
+    void sendWrongPasswordExistingUser_shouldReturnException() {
+        webTestClient
+                .post()
+                .uri("/api/auth/login")
+                .bodyValue(loginRequestWrongPassword)
+                .exchange()
+                .expectStatus()
+                .isUnauthorized()
+                .expectBody()
+                .jsonPath("$.detail")
+                .isEqualTo("Invalid password");
     }
 }
