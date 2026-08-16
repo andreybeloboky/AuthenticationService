@@ -46,7 +46,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseError);
     }
 
-    @ExceptionHandler(InvalidUsernameOrPasswordException.class)
+    @ExceptionHandler({
+        InvalidUsernameOrPasswordException.class,
+        UserRegistrationRollbackException.class
+    })
     public ResponseEntity<ProblemDetail> handleIncorrectDataException(
             InvalidUsernameOrPasswordException e) {
         log.error("Handle incorrect username or password exception", e);
