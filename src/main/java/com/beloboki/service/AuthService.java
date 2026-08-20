@@ -3,10 +3,7 @@ package com.beloboki.service;
 import com.beloboki.client.UserClient;
 import com.beloboki.dao.AuthDAO;
 import com.beloboki.dto.*;
-import com.beloboki.exception.InvalidTokenException;
-import com.beloboki.exception.InvalidUsernameOrPasswordException;
-import com.beloboki.exception.UsernameAlreadyExists;
-import com.beloboki.exception.UsernameNotFoundException;
+import com.beloboki.exception.*;
 import com.beloboki.mapper.AuthMapper;
 import com.beloboki.mapper.UserMapper;
 import com.beloboki.model.AuthUser;
@@ -44,8 +41,13 @@ public class AuthService {
         authUser.setPasswordHash(passwordEncoder.encode(registerRequest.password()));
         authUser.setUserId(userResponse.id());
 
-        authDAO.saveAndFlush(authUser);
-
+        try {
+            authDAO.saveAndFlush(authUser);
+        } catch (Exception e) {
+            userClient.deleteUser(userResponse.id());
+            throw new UserRegistrationRollbackException(
+                    "Registration failed, user creation rolled back", e);
+        }
         String accessToken =
                 jwtService.generateToken(
                         authUser.getUsername(), userResponse.id(), authUser.getRole());
